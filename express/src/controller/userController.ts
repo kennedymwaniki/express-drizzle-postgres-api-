@@ -5,6 +5,30 @@ import { eq } from "drizzle-orm";
 import asyncHandler from "../middleware/asyncHandler";
 //
 
+//desc Auth user & get token
+//route /api/auth/login
+const login = asyncHandler(async (req: any, res: any) => {
+  res.send("hello auth user");
+});
+
+//@desc register a user
+//route /api/auth/register
+const registerUser = asyncHandler(async (res: any, req: any) => {
+  res.send("hello registered");
+});
+
+//@desc logout
+//route api/auth/logout
+//clear cookie
+const logoutUser = asyncHandler(async (res: any, req: any) => {
+  res.send("you are logout");
+});
+
+//@desc user profile
+const getUserProfile = asyncHandler(async (res: any, req: any) => {
+  res.send("user profile");
+});
+
 //@desc Fetches users
 //@route /api/users
 const getUsers = asyncHandler(async (req: any, res: any) => {
@@ -30,7 +54,22 @@ const getUserById = asyncHandler(async (req: any, res: any) => {
 const createUser = asyncHandler(async (req: any, res: any) => {
   const user = req.body;
   const User = await db.insert(UsersTable).values(user);
-  return res.status(200).json({ message: "user creation successful", User });
+  return res.status(201).json({ message: "user creation successful", User });
 });
 
-export { getUsers, getUserById, createUser };
+//@desc delete user
+//
+const deleteUser = asyncHandler(async (req: any, res: any) => {
+  await db.delete(UsersTable).where(eq(UsersTable.userId, req.params.id));
+  res.status(201);
+});
+export {
+  getUsers,
+  getUserById,
+  createUser,
+  login,
+  deleteUser,
+  logoutUser,
+  registerUser,
+  getUserProfile,
+};
