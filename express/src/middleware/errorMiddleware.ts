@@ -7,7 +7,7 @@ const notFound = (req: any, res: any, next: any) => {
   next(error);
 };
 
-//!overriding the default express error handler
+//overriding the default express error handler
 const errorHandler = (error: Error, req: any, res: any, next: any) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = error.message;

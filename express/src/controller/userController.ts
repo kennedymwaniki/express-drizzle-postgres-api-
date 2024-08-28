@@ -3,25 +3,24 @@ import { UsersTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 import asyncHandler from "../middleware/asyncHandler";
-//
 
 //desc Auth user & get token
 //route /api/auth/login
 const login = asyncHandler(async (req: any, res: any) => {
-  res.send("hello auth user");
+  res.send("hello you are now logged in as ken");
 });
 
 //@desc register a user
 //route /api/auth/register
 const registerUser = asyncHandler(async (res: any, req: any) => {
-  res.send("hello registered");
+  res.send("you are registered");
 });
 
 //@desc logout
 //route api/auth/logout
 //clear cookie
 const logoutUser = asyncHandler(async (res: any, req: any) => {
-  res.send("you are logout");
+  res.send("you are logged out");
 });
 
 //@desc user profile
@@ -57,11 +56,21 @@ const createUser = asyncHandler(async (req: any, res: any) => {
   return res.status(201).json({ message: "user creation successful", User });
 });
 
-//@desc delete user
+//!@desc delete user
 //
 const deleteUser = asyncHandler(async (req: any, res: any) => {
-  await db.delete(UsersTable).where(eq(UsersTable.userId, req.params.id));
-  res.status(201);
+  const user = await db.query.UsersTable.findFirst({
+    where: eq(UsersTable.userId, req.params.id),
+  });
+  if (user) {
+    const User = await db
+      .delete(UsersTable)
+      .where(eq(UsersTable.userId, req.params.id));
+    return res.status(201).json({ message: "user deletion successful", User });
+  } else {
+    res.status(404);
+    throw new Error(`User not found`);
+  }
 });
 export {
   getUsers,
