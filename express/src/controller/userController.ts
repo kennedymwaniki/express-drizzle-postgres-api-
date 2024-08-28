@@ -19,18 +19,18 @@ const registerUser = asyncHandler(async (res: any, req: any) => {
 //@desc logout
 //route api/auth/logout
 //clear cookie
-const logoutUser = asyncHandler(async (res: any, req: any) => {
+const logoutUser = asyncHandler(async (req: any, res: any) => {
   res.send("you are logged out");
 });
 
 //@desc user profile
-const getUserProfile = asyncHandler(async (res: any, req: any) => {
+const getUserProfile = asyncHandler(async (req: any, res: any) => {
   res.send("user profile");
 });
 
 //@desc Fetches users
 //@route /api/users
-const getUsers = asyncHandler(async (req: any, res: any) => {
+const getUsers = asyncHandler(async (res: any, req: any) => {
   const users = await db.query.UsersTable.findMany();
   res.json(users);
 });
