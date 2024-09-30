@@ -1,10 +1,9 @@
+import jwt from "jsonwebtoken";
 import db from "../drizzle/db";
 import { UsersTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
-import { sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import asyncHandler from "../middleware/asyncHandler";
-
 //desc Auth user & get token
 //route /api/auth/login
 const login = asyncHandler(async (req: any, res: any) => {
@@ -15,6 +14,24 @@ const login = asyncHandler(async (req: any, res: any) => {
 
   const isValid = await bcrypt.compare(password, user.password as string);
   if (user && isValid) {
+    // generate jwt token
+    const payload = {
+      id: user.userId,
+      role: user.role,
+      // Session to expire after 3 hours
+      exp: Math.floor(Date.now() / 1000) + 60 * 180,
+    };
+    const SECRET = process.env.secret!;
+    const token = jwt.sign(payload, SECRET);
+    // set jwt as http only cookie
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      // if it is not in production it is in development mode
+      secure: process.env.NODE_ENV! === "production",
+      sameSite: "strict",
+      maxAge: 60 * 180 * 1000,
+    });
     res.json({
       id: user.userId,
       email: user.email,
