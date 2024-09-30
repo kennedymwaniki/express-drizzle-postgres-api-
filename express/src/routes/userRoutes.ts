@@ -10,24 +10,24 @@ import {
   registerUser,
   getUserProfile,
 } from "../controller/userController";
-const router = express.Router();
+const userRouter = express.Router();
 
-router.get("/users", getUsers);
-//or you can do router.route("/users").get(getUsers)
+userRouter.get("/users", getUsers);
+//or you can do userRouter.route("/users").get(getUsers)
 
-router.get("/users/:id", getUserById);
+userRouter.get("/users/:id", getUserById);
 
 //delete user
-router.delete("/users/:id", deleteUser);
+userRouter.delete("/users/:id", deleteUser);
 
-//or you can do router.route("/users/:id").get(getUsers)
+//or you can do userRouter.route("/users/:id").get(getUsers)
 
-router.post("/users", createUser);
+userRouter.post("/users", createUser);
 
-router.post("/users/auth/login", login);
-router.post("/users/auth/logout", logoutUser);
-router.get("/users/profile", getUserProfile);
+userRouter.post("/users/auth/login", login);
+userRouter.post("/users/auth/logout", logoutUser);
+userRouter.get("/users/profile", getUserProfile);
 
-router.post("/auth/register", registerUser);
+userRouter.post("/auth/register", registerUser);
 
-export default router;
+export default userRouter;

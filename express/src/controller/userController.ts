@@ -1,18 +1,36 @@
 import db from "../drizzle/db";
 import { UsersTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
-
+import { sql } from "drizzle-orm";
+import bcrypt from "bcrypt";
 import asyncHandler from "../middleware/asyncHandler";
 
 //desc Auth user & get token
 //route /api/auth/login
 const login = asyncHandler(async (req: any, res: any) => {
-  res.send("hello you are now logged in as ken");
+  const { email, password } = req.body;
+  const user: any = await db.query.UsersTable.findFirst({
+    where: eq(UsersTable.email, email),
+  });
+
+  const isValid = await bcrypt.compare(password, user.password as string);
+  if (user && isValid) {
+    res.json({
+      id: user.userId,
+      email: user.email,
+      role: user.role,
+      name: user.fullName,
+    });
+  } else {
+    // res.json({ msg: "NO such user found" });
+    res.status(401);
+    throw new Error("invalid password or username");
+  }
 });
 
 //@desc register a user
 //route /api/auth/register
-const registerUser = asyncHandler(async (res: any, req: any) => {
+const registerUser = asyncHandler(async (req: any, res: any) => {
   res.send("you are registered");
 });
 
@@ -30,7 +48,7 @@ const getUserProfile = asyncHandler(async (req: any, res: any) => {
 
 //@desc Fetches users
 //@route /api/users
-const getUsers = asyncHandler(async (res: any, req: any) => {
+const getUsers = asyncHandler(async (req: any, res: any) => {
   const users = await db.query.UsersTable.findMany();
   res.json(users);
 });
@@ -52,6 +70,10 @@ const getUserById = asyncHandler(async (req: any, res: any) => {
 //@desc create a new user
 const createUser = asyncHandler(async (req: any, res: any) => {
   const user = req.body;
+  // hash password
+  const hashedPassword = await bcrypt.hash(user.password, 10);
+  user.password = hashedPassword;
+
   const User = await db.insert(UsersTable).values(user);
   return res.status(201).json({ message: "user creation successful", User });
 });
