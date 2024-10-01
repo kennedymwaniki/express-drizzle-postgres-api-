@@ -1,5 +1,4 @@
 import express from "express";
-
 import {
   getUsers,
   getUserById,
@@ -10,12 +9,13 @@ import {
   registerUser,
   getUserProfile,
 } from "../controller/userController";
+import { admin, protect } from "../middleware/authBearer";
 const userRouter = express.Router();
 
-userRouter.get("/users", getUsers);
+userRouter.get("/users", protect, getUsers);
 //or you can do userRouter.route("/users").get(getUsers)
 
-userRouter.get("/users/:id", getUserById);
+userRouter.get("/users/:id", protect, getUserById);
 
 //delete user
 userRouter.delete("/users/:id", deleteUser);

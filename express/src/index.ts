@@ -6,11 +6,11 @@ import userRouter from "./routes/userRoutes";
 
 const app = express();
 const port = 5000;
+app.use(cookieParser());
 
 //!Body Parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Hello, TypeScript Node Express!");

@@ -4,10 +4,13 @@ import { UsersTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import asyncHandler from "../middleware/asyncHandler";
+
 //desc Auth user & get token
 //route /api/auth/login
 const login = asyncHandler(async (req: any, res: any) => {
   const { email, password } = req.body;
+  // temporary usertype
+
   const user: any = await db.query.UsersTable.findFirst({
     where: eq(UsersTable.email, email),
   });
@@ -28,7 +31,7 @@ const login = asyncHandler(async (req: any, res: any) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       // if it is not in production it is in development mode
-      secure: process.env.NODE_ENV! === "production",
+      secure: process.env.NODE_ENV! !== "production",
       sameSite: "strict",
       maxAge: 60 * 180 * 1000,
     });
