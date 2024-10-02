@@ -5,14 +5,14 @@ import {
   createUser,
   login,
   deleteUser,
-  logoutUser,
-  registerUser,
+  logout,
   getUserProfile,
+  register,
 } from "../controller/userController";
 import { admin, protect } from "../middleware/authBearer";
 const userRouter = express.Router();
 
-userRouter.get("/users", protect, getUsers);
+userRouter.get("/users", getUsers);
 //or you can do userRouter.route("/users").get(getUsers)
 
 userRouter.get("/users/:id", protect, getUserById);
@@ -22,12 +22,11 @@ userRouter.delete("/users/:id", deleteUser);
 
 //or you can do userRouter.route("/users/:id").get(getUsers)
 
-userRouter.post("/users", createUser);
+userRouter.post("/users/createuser", createUser);
 
 userRouter.post("/users/auth/login", login);
-userRouter.post("/users/auth/logout", logoutUser);
+userRouter.post("/users/logout", logout);
+userRouter.post("/users/register", register);
 userRouter.get("/users/profile", getUserProfile);
-
-userRouter.post("/auth/register", registerUser);
 
 export default userRouter;

@@ -4,7 +4,7 @@ import { UsersTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import asyncHandler from "../middleware/asyncHandler";
-
+import generateCookie from "../utils/generatecookie";
 //desc Auth user & get token
 //route /api/auth/login
 const login = asyncHandler(async (req: any, res: any) => {
@@ -15,26 +15,14 @@ const login = asyncHandler(async (req: any, res: any) => {
     where: eq(UsersTable.email, email),
   });
 
+  if (!user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
   const isValid = await bcrypt.compare(password, user.password as string);
   if (user && isValid) {
-    // generate jwt token
-    const payload = {
-      id: user.userId,
-      role: user.role,
-      // Session to expire after 3 hours
-      exp: Math.floor(Date.now() / 1000) + 60 * 180,
-    };
-    const SECRET = process.env.secret!;
-    const token = jwt.sign(payload, SECRET);
-    // set jwt as http only cookie
-
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      // if it is not in production it is in development mode
-      secure: process.env.NODE_ENV! !== "production",
-      sameSite: "strict",
-      maxAge: 60 * 180 * 1000,
-    });
+    generateCookie(user, res);
     res.json({
       id: user.userId,
       email: user.email,
@@ -48,17 +36,56 @@ const login = asyncHandler(async (req: any, res: any) => {
   }
 });
 
-//@desc register a user
-//route /api/auth/register
-const registerUser = asyncHandler(async (req: any, res: any) => {
-  res.send("you are registered");
-});
-
 //@desc logout
 //route api/auth/logout
 //clear cookie
-const logoutUser = asyncHandler(async (req: any, res: any) => {
-  res.send("you are logged out");
+const logout = asyncHandler(async (req: any, res: any) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ Message: "logged out successfully" });
+});
+
+//@desc register a user
+//route /api/auth/register
+const register = asyncHandler(async (req: any, res: any) => {
+  const USER = req.body;
+  const user = await db.query.UsersTable.findFirst({
+    where: eq(UsersTable.email, USER.email),
+  });
+  if (user) {
+    res.status(400);
+    throw new Error("A user with such an email already exists");
+  }
+  const hashedPassword = await bcrypt.hash(USER.password, 10);
+  USER.password = hashedPassword;
+  const User: any = await db.insert(UsersTable).values(USER);
+  if (User) {
+    generateCookie(User, res);
+    res.json({
+      id: User.userId,
+      email: User.email,
+      role: User.role,
+      name: User.fullName,
+    });
+    res.status(200).json({ Message: "Registered and loggedin successfully" });
+  } else {
+    res.status(400);
+    throw new Error("invalid user data");
+  }
+});
+
+// @desc users/createuser
+//@desc create a new user
+const createUser = asyncHandler(async (req: any, res: any) => {
+  const user = req.body;
+  // hash password
+  const hashedPassword = await bcrypt.hash(user.password, 10);
+  user.password = hashedPassword;
+
+  const User = await db.insert(UsersTable).values(user);
+  return res.status(201).json({ message: "user creation successful", User });
 });
 
 //@desc user profile
@@ -87,17 +114,6 @@ const getUserById = asyncHandler(async (req: any, res: any) => {
   }
 });
 
-//@desc create a new user
-const createUser = asyncHandler(async (req: any, res: any) => {
-  const user = req.body;
-  // hash password
-  const hashedPassword = await bcrypt.hash(user.password, 10);
-  user.password = hashedPassword;
-
-  const User = await db.insert(UsersTable).values(user);
-  return res.status(201).json({ message: "user creation successful", User });
-});
-
 //!@desc delete user
 //
 const deleteUser = asyncHandler(async (req: any, res: any) => {
@@ -120,7 +136,7 @@ export {
   createUser,
   login,
   deleteUser,
-  logoutUser,
-  registerUser,
+  logout,
+  register,
   getUserProfile,
 };

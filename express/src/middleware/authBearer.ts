@@ -45,4 +45,14 @@ const admin = (req: any, res: any, next: any) => {
   }
 };
 
-export { protect, admin };
+// both users
+const both = (req: any, res: any, next: any) => {
+  if ((req.user && req.user.admin) || req.user.user) {
+    next();
+  } else {
+    res.status(401);
+    throw new Error("NOt authorized, token required");
+  }
+};
+
+export { protect, admin, both };
