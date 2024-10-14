@@ -24,10 +24,12 @@ const login = asyncHandler(async (req: any, res: any) => {
   if (user && isValid) {
     generateCookie(user, res);
     res.json({
-      id: user.userId,
-      email: user.email,
-      role: user.role,
-      name: user.fullName,
+      user: {
+        id: user.userId,
+        email: user.email,
+        role: user.role,
+        name: user.fullName,
+      },
     });
   } else {
     // res.json({ msg: "NO such user found" });

@@ -25,8 +25,8 @@ userRouter.delete("/users/:id", deleteUser);
 userRouter.post("/users/createuser", createUser);
 
 userRouter.post("/users/auth/login", login);
-userRouter.post("/users/logout", logout);
-userRouter.post("/users/register", register);
+userRouter.post("/users/auth/logout", logout);
+userRouter.post("/users/auth/register", register);
 userRouter.get("/users/profile", getUserProfile);
 
 export default userRouter;
