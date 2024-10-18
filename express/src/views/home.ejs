@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books Website</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; margin: 0; padding: 0">
+    <!-- Navbar -->
+    <header style="background-color: #333; padding: 1rem; text-align: center">
+      <nav>
+        <a
+          href="/"
+          style="color: white; text-decoration: none; margin-right: 15px"
+          >Home</a
+        >
+        <a
+          href="/books"
+          style="color: white; text-decoration: none; margin-right: 15px"
+          >Books</a
+        >
+        <a href="/about" style="color: white; text-decoration: none">About</a>
+      </nav>
+    </header>
+
+    <!-- Welcome Section -->
+    <section
+      style="background-color: #f4f4f4; padding: 2rem 1rem; text-align: center"
+    >
+      <h1 style="color: #333">Welcome to the Books Website</h1>
+      <p style="color: #555">Discover your next favorite book here!</p>
+    </section>
+
+    <!-- Books Section -->
+    <section style="padding: 2rem 1rem; text-align: center">
+      <h2 style="color: #333">Featured Books</h2>
+      <div style="display: flex; justify-content: center; flex-wrap: wrap">
+        <% Books.forEach(function(book) { %>
+        <div
+          style="
+            background-color: white;
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 1rem;
+            width: 200px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+          "
+        >
+          <h3 style="color: #444"><%= book.title %></h3>
+          <p style="color: #777">by <%= book.author %></p>
+          <p style="color: #999">Price: $<%= book.price %></p>
+          <button
+            style="
+              background-color: #333;
+              color: white;
+              border: none;
+              padding: 0.5rem 1rem;
+              cursor: pointer;
+            "
+          >
+            Add to Cart
+          </button>
+        </div>
+        <% }); %>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+      style="
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+      "
+    >
+      <p>&copy; 2024 Books Website</p>
+    </footer>
+  </body>
+</html>

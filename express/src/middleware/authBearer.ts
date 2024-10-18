@@ -51,7 +51,7 @@ const both = (req: any, res: any, next: any) => {
     next();
   } else {
     res.status(401);
-    throw new Error("NOt authorized, token required");
+    throw new Error("Not authorized, token required");
   }
 };
 
